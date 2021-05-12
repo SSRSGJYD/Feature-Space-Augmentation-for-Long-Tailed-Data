@@ -5,36 +5,39 @@ Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Lo
 
 ## Code Structure
 
-    .
-    ├── configs                             # store experiment configs
-    │   ├── phase_i                         # there are 3 training phase in the paper
+    ./
+    ├── configs/                            # store experiment configs
+    │   ├── phase_i/                        # there are 3 training phase in the paper
     │   │   ├── cifar10-LT_resnet18.yaml    # a training config
     │   │   └── ... 
-    │   ├── phase_ii
-    │   └── phase_iii
-    ├── datasets                            # all datasets
+    │   ├── phase_ii/
+    │   └── phase_iii/
+    ├── datasets/                           # all datasets
     │   ├── __init__.py                     # include get_dataset()
     │   ├── cifar_lt.py
     │   └── ...
-    ├── models                              # all models
+    ├── models/                             # all models
     │   ├── __init__.py                     # include get_model()
     │   ├── resnet.py
     │   └── ...
-    ├── process                             # train, test code for 3 phases
+    ├── process/                            # train, test code for 3 phases
     │   ├── phase_i_train_or_test.py
     │   └── ...
-    ├── utils                               # Tools and utilities
-    ├── checkpoints                         # save model checkpoints
-    │   ├── phase_i
-    │   │   ├── cifar10-LT_resnet18         # same as current config filename
-    │   │   │   ├── note_1                  # pass to argparser to identify different experiment setting
-    │   │   │   ├── note_2
+    ├── utils/                              # Tools and utilities
+    ├── checkpoints/                        # save model checkpoints
+    │   ├── phase_i/
+    │   │   ├── cifar10-LT_resnet18/        # same as current config filename
+    │   │   │   ├── note_1/                 # pass to argparser to identify different experiment setting
+    │   │   │   │   ├── best_model.pt       # checkpoint with best test acc
+    │   │   │   │   ├── model_epoch_0020.pt # checkpoint at epoch 20
+    │   │   │   │   └── ... 
+    │   │   │   ├── note_2/
     │   │   │   └── ...
     │   │   └── ...
-    │   ├── phase_ii
-    │   └── phase_iii
-    ├── log                                 # logging files and backup configs, same structure as ./checkpoints
-    ├── run_summary                         # tensorboard summary, same structure as ./checkpoints
+    │   ├── phase_ii/
+    │   └── phase_iii/
+    ├── log/                                # logging files and backup configs, same structure as ./checkpoints
+    ├── run_summary/                        # tensorboard summary, same structure as ./checkpoints
     ├── .gitignore                          
     ├── LICENSE
     ├── requirements.txt                   
