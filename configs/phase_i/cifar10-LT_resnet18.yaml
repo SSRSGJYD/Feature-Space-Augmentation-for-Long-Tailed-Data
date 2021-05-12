@@ -1,3 +1,5 @@
+random_seed: 1314  # null for no seed
+
 dataset:
   name: cifar10-LT
   kwargs: null
@@ -31,7 +33,11 @@ test:
 checkpoint:
   path: checkpoints/
   load_checkpoint: null  # like 'best_model.pt'. if none, no load checkpoint
+  save_checkpoint_interval: 20 # only for train phase. epoch number
 
 log:
-  path: exp/
-  log_interval: 200  # only for train phase
+  path: log/
+  log_interval: 200  # only for train phase. batch number
+
+tensorboard:
+  path: run_summary/

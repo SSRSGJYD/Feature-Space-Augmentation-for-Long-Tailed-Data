@@ -2,9 +2,11 @@ import datetime
 import logging
 import logging.handlers
 import os
+import random
 import sys
 
 import colorlog
+import numpy as np
 import torch
 import yaml
 
@@ -35,7 +37,10 @@ def save_config(config_filename: str, config: dict):
 
 
 default_train_state = {
-    'epoch': 1
+    'epoch':          1,
+    'acc':            0.0,
+    'best_acc':       0.0,
+    'best_acc_epoch': 1
 }
 
 
@@ -72,6 +77,17 @@ def create_criterion(name: str):
         return torch.nn.CrossEntropyLoss()
     else:
         raise AttributeError('loss type %s is not recognized' % name)
+
+
+def set_random_seed(seed: int) -> None:
+    """
+    Sets the seeds at a certain value.
+    :param seed: the value to be set
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
 def get_logger(name, logging_folder=None, verbose=False, logging_file_prefix=None):
