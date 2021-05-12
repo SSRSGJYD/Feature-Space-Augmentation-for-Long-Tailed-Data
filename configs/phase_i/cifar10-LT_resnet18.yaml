@@ -7,7 +7,7 @@ dataset:
 model:
   name: resnet18
   kwargs:
-    pretrain
+    pretrain: false
 
 phase: train  # train or test
 
