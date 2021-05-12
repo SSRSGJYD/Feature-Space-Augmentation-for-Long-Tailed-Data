@@ -1,0 +1,5 @@
+yaml~=0.2.5
+pyyaml~=5.4.1
+torchvision~=0.9.1
+numpy~=1.19.4
+colorlog~=5.0.1

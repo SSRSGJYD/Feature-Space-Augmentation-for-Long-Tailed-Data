@@ -6,7 +6,7 @@ class Cifar10LTDataset(torch.utils.data.Dataset):
     NUM_CLASSES = 10
     IM = None  # 10, 20, 50, 100 or 200
 
-    def __init__(self, im, **kwargs):
+    def __init__(self, train: bool, im: int, **kwargs):
         super().__init__()
         # TODO
         pass
@@ -25,7 +25,7 @@ class Cifar100LTDataset(torch.utils.data.Dataset):
     NUM_CLASSES = 100
     IM = None  # 10, 20, 50, 100 or 200
 
-    def __init__(self, im, **kwargs):
+    def __init__(self, train: bool, im: int, **kwargs):
         super().__init__()
         # TODO
         pass

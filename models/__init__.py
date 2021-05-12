@@ -11,6 +11,6 @@ all_models = {
 }
 
 
-def get_model(name: str, **kwargs) -> torch.nn.Module:
+def get_model(name: str, num_classes: int, **kwargs) -> torch.nn.Module:
     assert name in all_models, 'model %s does not exist' % name
-    return all_models[name](**kwargs)
+    return all_models[name](num_classes=num_classes, **kwargs)

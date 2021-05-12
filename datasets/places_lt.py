@@ -6,7 +6,7 @@ class PlacesLTDataset(torch.utils.data.Dataset):
     NUM_CLASSES = 365
     IM = 996
 
-    def __init__(self, **kwargs):
+    def __init__(self, train: bool, **kwargs):
         super().__init__()
         # TODO
         pass

@@ -18,6 +18,6 @@ all_datasets = {
 }
 
 
-def get_dataset(name, **kwargs) -> torch.utils.data.Dataset:
+def get_dataset(name: str, train: bool, **kwargs) -> torch.utils.data.Dataset:
     assert name in all_datasets, 'dataset %s does not exist' % name
-    return all_datasets[name](**kwargs)
+    return all_datasets[name](train=train, **kwargs)

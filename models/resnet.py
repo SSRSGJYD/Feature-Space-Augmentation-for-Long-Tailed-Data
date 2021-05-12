@@ -1,7 +1,3 @@
-from torch import Tensor
-import torch.nn as nn
-from torchvision.models.utils import load_state_dict_from_url
-from typing import Type, Any, Callable, Union, List, Optional
 from typing import Any, Callable, List, Optional, Type, Union
 
 import torch.nn as nn
@@ -253,6 +249,9 @@ def _resnet(
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
+        # the last linear layer cannot be loaded if num_classes is not 1000
+        if 'num_classes' in kwargs and kwargs['num_classes'] != 1000:
+            state_dict.pop('fc')
         model.load_state_dict(state_dict)
     return model
 

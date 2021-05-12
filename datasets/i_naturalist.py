@@ -6,7 +6,7 @@ class INaturalist2017Dataset(torch.utils.data.Dataset):
     NUM_CLASSES = 5089
     IM = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, train: bool, **kwargs):
         super().__init__()
         # TODO
         pass
@@ -25,7 +25,7 @@ class INaturalist2018Dataset(torch.utils.data.Dataset):
     NUM_CLASSES = 8142
     IM = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, train: bool, **kwargs):
         super().__init__()
         # TODO
         pass

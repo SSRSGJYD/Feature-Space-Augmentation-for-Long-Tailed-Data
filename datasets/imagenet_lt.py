@@ -6,7 +6,7 @@ class ImageNetLTDataset(torch.utils.data.Dataset):
     NUM_CLASSES = 1000
     IM = 256
 
-    def __init__(self, **kwargs):
+    def __init__(self, train: bool, **kwargs):
         super().__init__()
         pass
 
