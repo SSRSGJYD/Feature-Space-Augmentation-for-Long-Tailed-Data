@@ -1,0 +1,28 @@
+dataset:
+  name:   cifar10-LT
+  kwargs: null
+
+model:
+  name: resnet18
+  kwargs:
+        pretrain
+
+train:
+  loss:       softmax
+  num_epoch:  300
+  batch_size: 128
+  optimizer:  sgd
+  lr:         0.1
+  lr_scheduler:
+    name: StepLR
+    kwargs:
+      step_size: 150  # epoch step
+      gamma:     0.1
+
+
+checkpoint:
+  path: checkpoints/
+
+log:
+  path: exp/
+

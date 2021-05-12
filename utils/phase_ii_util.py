@@ -1,10 +1,11 @@
 import multiprocessing
 
+
 def multiprocess_in_sequence(func, param_list, workers=10):
     param_data = [[] for _ in range(workers)]
     c_worker = 0
     for i, param in enumerate(param_list):
-        param_data[c_worker].append((i,param))
+        param_data[c_worker].append((i, param))
         c_worker = (c_worker + 1) % workers
 
     q = multiprocessing.Queue()
