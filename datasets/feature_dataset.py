@@ -28,14 +28,14 @@ class FeatureDataset(Dataset):
             else:
                 self.tail_class_samples += samples
 
-        scores_per_class = torch.load(os.path.join(config['feature']['path'], 'scores_per_class.pth'))
+        scores_per_class = torch.load(os.path.join(config['feature']['path'], 'scores_per_class.pt'))
         for c in range(self.NUM_CLASSES):
             scores_per_class[c, c] = 0
         _, topk = torch.topk(scores_per_class, self.Nf, dim=0)
         self.confusing_head_classes = topk.t().tolist()
 
     def read_feature(self, sample, need_cam=True):
-        record = np.load(os.path.join(self.feature_folder, self.cam_layer, '{}.npz'.format(sample['uuid'])))
+        record = np.load(os.path.join(self.feature_folder, self.cam_layer, '{}.npz'.format(sample[1])))
         feature = record['feature']
         cam = record['cam'] if need_cam else None
         return feature, cam
@@ -46,7 +46,7 @@ class FeatureDataset(Dataset):
         tail_feature = np.where(tail_cam > self.ts, tail_feature, 0)
         tail_features = [tail_feature]
 
-        tail_class = tail_sample['class']
+        tail_class = tail_sample[0]
         confusing_classes = self.confusing_head_classes[tail_class]
         for head_class in confusing_classes:
             # sample one sample from each of the Na head classes
@@ -72,7 +72,7 @@ class FeatureDataset(Dataset):
         for head_sample in head_samples:
             head_feature, _ = self.read_feature(head_sample, False)
             batch_features.append(head_feature)
-            label[idx] = head_sample['class']
+            label[idx] = head_sample[0]
             idx += 1
         
         return batch_features, label

@@ -78,7 +78,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
     # average scores per class
     for c in range(test_loader.dataset.NUM_CLASSES):
         scores_per_class[c].div_(len(test_loader.dataset.class_samples[c]))
-    np.save(os.path.join(config['feature']['path'], 'scores_per_class.npy'), scores_per_class.numpy())
+    torch.save(scores_per_class, os.path.join(config['feature']['path'], 'scores_per_class.pt'))
     
 
 if __name__ == '__main__':
