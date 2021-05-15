@@ -5,6 +5,7 @@ import torch.utils.data
 from torch.utils.tensorboard import SummaryWriter
 
 from datasets import get_dataset
+from datasets.feature_dataset import FeatureDataset
 from models import get_model
 from utils.general_util import create_criterion, create_lr_scheduler, create_optimizer, default_train_state, get_device, \
     get_logger, load_config, load_state_dict_from_checkpoint, save_config, save_state_dict_to_checkpoint, \
@@ -12,7 +13,7 @@ from utils.general_util import create_criterion, create_lr_scheduler, create_opt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', type=str, default='cifar10-LT_resnet18',
-                    help='Which config is loaded from configs/phase_i')
+                    help='Which config is loaded from configs/phase_iii')
 parser.add_argument('-d', '--device', type=int, default=None,
                     help='Which gpu_id to use. If None, use cpu')
 parser.add_argument('-n', '--note', type=str, default='default_setting',
@@ -23,17 +24,17 @@ args = parser.parse_args()
 
 
 def main():
-    config_file = os.path.join('configs', 'phase_i', args.config + '.yaml')
+    config_file = os.path.join('configs', 'phase_iii', args.config + '.yaml')
     config = load_config(config_file)
     if config['random_seed'] is not None:
         set_random_seed(config['random_seed'])
-    path_prefix = os.path.join('phase_i', args.config, args.note)  # for logging, tensorboard, config_backup, etc.
+    path_prefix = os.path.join('phase_iii', args.config, args.note)  # for logging, tensorboard, config_backup, etc.
 
     # backup config
     save_config(os.path.join(config['log']['path'], path_prefix, 'config_back.yaml'), config)
     # create logger to file and console
     logging_path = os.path.join(config['log']['path'], path_prefix, 'logging')
-    logger = get_logger(name='phase_i' + args.config, logging_folder=logging_path, verbose=args.verbose)
+    logger = get_logger(name='phase_iii' + args.config, logging_folder=logging_path, verbose=args.verbose)
     tensorboard_writer = SummaryWriter(os.path.join(config['tensorboard']['path'], path_prefix))
     checkpoints_folder = os.path.join(config['checkpoint']['path'], path_prefix)
 
@@ -52,17 +53,18 @@ def main():
 
     if config['phase'] == 'train':
         train_dataset = get_dataset(config['dataset']['name'], train=True, **config['dataset']['kwargs'])
-        train_loader = torch.utils.data.DataLoader(train_dataset, config['train']['batch_size'], shuffle=True)
-        phase_i_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
+        feature_dataset = FeatureDataset(train_dataset, config)
+        train_loader = torch.utils.data.DataLoader(feature_dataset, config['train']['batch_size'], shuffle=True)
+        phase_iii_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
                       checkpoints_folder)
     else:
-        phase_i_test(test_loader, model, device, config, logger)
+        phase_iii_test(test_loader, model, device, config, logger)
     tensorboard_writer.close()
 
 
-def phase_i_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
+def phase_iii_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
                   checkpoint_folder):
-    trained_parameters = model.parameters()
+    trained_parameters = model.classifier.parameters()  # only classifier is optimized
     optimizer = create_optimizer(config['train']['optimizer']['name'], trained_parameters,
                                  **config['train']['optimizer']['kwargs'])
     lr_scheduler = create_lr_scheduler(config['train']['lr_scheduler']['name'], optimizer,
@@ -77,12 +79,12 @@ def phase_i_train(train_loader, test_loader, model, device, train_state, config,
         total_loss, log_loss = 0.0, 0.0
         model.train()
 
-        for i_batch, (img, label, _) in enumerate(train_loader):
-            img: torch.FloatTensor = img.to(device)
+        for i_batch, (feature, label) in enumerate(train_loader):
+            feature: torch.FloatTensor = feature.to(device)
             label: torch.IntTensor = label.to(device)
 
             optimizer.zero_grad()
-            outputs = model(img)
+            outputs = model.forward_classifier(feature)
             loss = criterion(outputs, label)
             prediction = torch.argmax(outputs, 1)
             loss.backward()
@@ -90,16 +92,13 @@ def phase_i_train(train_loader, test_loader, model, device, train_state, config,
                 torch.nn.utils.clip_grad_norm_(trained_parameters, config['train']['gradient_clip'])
             optimizer.step()
 
-            total_samples += len(img)
-            log_samples += len(img)
+            total_samples += len(feature)
+            log_samples += len(feature)
             total_corrects += (prediction == label).type(torch.int32).sum().item()
             log_corrects += (prediction == label).type(torch.int32).sum().item()
-            total_loss += len(img) * loss.item()
-            log_loss += len(img) * loss.item()
+            total_loss += len(feature) * loss.item()
+            log_loss += len(feature) * loss.item()
 
-            # only save first batch images to tensorboard
-            if i_batch == 0:
-                tensorboard_writer.add_image('image/train', img, i_epoch)
             if (i_batch + 1) % config['log']['log_interval'] == 0:
                 log_loss = log_loss / log_samples
                 log_acc = log_corrects / log_samples
@@ -115,7 +114,7 @@ def phase_i_train(train_loader, test_loader, model, device, train_state, config,
                     % (i_epoch, config['train']['num_epoch'], epoch_loss, epoch_acc))
         tensorboard_writer.add_scalar('loss/train', epoch_loss, i_epoch)
         tensorboard_writer.add_scalar('acc/train', epoch_acc, i_epoch)
-        test_acc = phase_i_test(test_loader, model, device, config, logger, tensorboard_writer, i_epoch)
+        test_acc = phase_iii_test(test_loader, model, device, config, logger, tensorboard_writer, i_epoch)
         train_state['epoch'] = i_epoch
         train_state['acc'] = test_acc
         if i_epoch % config['checkpoint']['save_checkpoint_interval'] == 0 or i_epoch == config['train']['num_epoch']:
@@ -129,7 +128,7 @@ def phase_i_train(train_loader, test_loader, model, device, train_state, config,
                                           model.state_dict(), train_state)
 
 
-def phase_i_test(test_loader, model, device, config, logger, tensorboard_writer=None, i_epoch=None):
+def phase_iii_test(test_loader, model, device, config, logger, tensorboard_writer=None, i_epoch=None):
     criterion = create_criterion(config['test']['loss'])
 
     if i_epoch is None:

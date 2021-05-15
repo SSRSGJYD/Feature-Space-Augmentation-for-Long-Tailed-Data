@@ -1,7 +1,8 @@
 # Feature-Space-Augmentation-for-Long-Tailed-Data
 
-***
 Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Long-Tailed Data"
+
+
 
 ## Code Structure
 
@@ -11,9 +12,14 @@ Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Lo
     │   │   ├── cifar10-LT_resnet18.yaml    # a training config
     │   │   └── ... 
     │   ├── phase_ii/
+    │   │   ├── cifar10-LT_resnet18.yaml    # config for extracting feature map
+    │   │   └── ... 
     │   └── phase_iii/
+    │   │   ├── cifar10-LT_resnet18.yaml    # a training config
+    │   │   └── ... 
     ├── datasets/                           # all datasets
     │   ├── __init__.py                     # include get_dataset()
+    │   ├── feature_dataset.py				# training dataset for phase 3
     │   ├── cifar_lt.py
     │   └── ...
     ├── models/                             # all models
@@ -22,7 +28,8 @@ Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Lo
     │   └── ...
     ├── process/                            # train, test code for 3 phases
     │   ├── phase_i_train_or_test.py
-    │   └── ...
+    │   ├── phase_ii_extract_feature.py
+    │   └── phase_iii_train_or_test.py
     ├── utils/                              # Tools and utilities
     ├── checkpoints/                        # save model checkpoints
     │   ├── phase_i/
@@ -34,7 +41,6 @@ Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Lo
     │   │   │   ├── note_2/
     │   │   │   └── ...
     │   │   └── ...
-    │   ├── phase_ii/
     │   └── phase_iii/
     ├── log/                                # logging files and backup configs, same structure as ./checkpoints
     ├── run_summary/                        # tensorboard summary, same structure as ./checkpoints
@@ -42,3 +48,4 @@ Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Lo
     ├── LICENSE
     ├── requirements.txt                   
     └── README.md
+

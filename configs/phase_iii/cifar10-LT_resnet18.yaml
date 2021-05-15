@@ -12,23 +12,31 @@ model:
 phase: train  # train or test
 
 train:
-  num_epoch: 300
+  num_epoch: 17  # num_epoch = 6400 * batch_size / number of samples in training set
   batch_size: 128
   loss: SoftmaxCrossEntropy
   optimizer:
     name: SGD  # class name in torch.optim
     kwargs: null
-  lr: 0.1
-  lr_scheduler:
-    name: StepLR  # class name in torch.optim.lr_scheduler
+  lr: 0.001
+  lr_scheduler:  
+    name: StepLR
     kwargs:
-      step_size: 150  # epoch step
-      gamma: 0.1
+      step_size: 150
+      gamma: 1  # we fix the learning rate
   gradient_clip: null  # null or float
 
 test:
   batch_size: 128
   loss: softmax
+
+finetune:
+  Nt: 16  # Nt = batch size / (2 * (1 + Na))
+  Na: 3
+  Nf: 3
+  ts: 0.8
+  tg: 0.2
+  cam_layer: 'layer4'
 
 checkpoint:
   path: checkpoints/
