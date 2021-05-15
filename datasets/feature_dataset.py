@@ -1,25 +1,25 @@
-import json
 import random
-
 import numpy as np
+import os
 import torch
 from torch.utils.data import Dataset
 
 
 class FeatureDataset(Dataset):
-    """This class is the dataset in stage 2 and 3."""
+    """This class is the dataset in stage 3."""
 
-    def __init__(self, config):
-        self.Nt = config.Nt
-        self.Na = config.Na
-        self.Nf = config.Nf
-        self.ts = config.ts
-        self.tg = config.tg
-        self.gamma = config.gamma
+    def __init__(self, image_dataset, config):
+        self.Nt = config['Nt']
+        self.Na = config['Na']
+        self.Nf = config['Nf']
+        self.ts = config['ts']
+        self.tg = config['tg']
+        self.feature_folder = config['feature']['path']
+        self.cam_layer = config['finetune']['cam_layer']
 
-        self.head_classes = json.load(config.head_classes)
-        self.class_samples = json.load(config.class_samples)
-        self.confusing_head_classes = json.load(config.confusing_head_classes)
+        self.NUM_CLASSES = image_dataset.NUM_CLASSES
+        self.head_classes = image_dataset.head_classes
+        self.class_samples = image_dataset.class_samples
         self.head_class_samples = []
         self.tail_class_samples = []
         for c, samples in self.class_samples:
@@ -28,16 +28,22 @@ class FeatureDataset(Dataset):
             else:
                 self.tail_class_samples += samples
 
+        scores_per_class = torch.load(os.path.join(config['feature']['path'], 'scores_per_class.pth'))
+        for c in range(self.NUM_CLASSES):
+            scores_per_class[c, c] = 0
+        _, topk = torch.topk(scores_per_class, self.Nf, dim=0)
+        self.confusing_head_classes = topk.t().tolist()
+
     def read_feature(self, sample, need_cam=True):
-        feature = np.load('')
-        cam = np.load('') if need_cam else None
+        record = np.load(os.path.join(self.feature_folder, self.cam_layer, '{}.npz'.format(sample['uuid'])))
+        feature = record['feature']
+        cam = record['cam'] if need_cam else None
         return feature, cam
 
     def fusion_feature(self, tail_sample):
         # feature fusion
         tail_feature, tail_cam = self.read_feature(tail_sample)
         tail_feature = np.where(tail_cam > self.ts, tail_feature, 0)
-        tail_feature = np.mean(tail_feature, axis=(1,2))
         tail_features = [tail_feature]
 
         tail_class = tail_sample['class']
@@ -47,8 +53,9 @@ class FeatureDataset(Dataset):
             confusing_sample = random.sample(self.class_samples[head_class], 1)     
             head_feature, head_cam = self.read_feature(confusing_sample)
             head_feature = np.where(head_cam < self.tg, head_feature, 0)
-            head_feature = np.mean(head_feature, axis=(1,2))
-            fusion_feature = self.gamma * tail_feature + (1-self.gamma) * head_feature
+            combine_mask = np.random.rand(head_feature.shape[0], head_feature.shape[1])
+            combine_mask = np.where(combine_mask > 0.5, 1, 0)
+            fusion_feature = combine_mask * tail_feature + (1-combine_mask) * head_feature
             tail_features.append(fusion_feature)
         return tail_features
  
