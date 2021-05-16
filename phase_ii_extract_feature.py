@@ -9,7 +9,7 @@ from utils.general_util import get_device, load_config, load_state_dict_from_che
 from utils.phase_ii_util import GradCam
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--config', type=str, default='cifar10-LT_resnet18',
+parser.add_argument('-c', '--config', type=str, default='example',
                     help='Which config is loaded from configs/phase_ii')
 parser.add_argument('-d', '--device', type=int, default=None,
                     help='Which gpu_id to use. If None, use cpu')
@@ -49,6 +49,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
         outputs = model(img)
         scores = F.softmax(outputs, dim=1).cpu().detach()
         last = label[0]
+        gradcam.cat_info()
         change_indices = [0]
         for i in range(1, len(label)):
             if label[i] != last:
@@ -57,24 +58,25 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
 
         change_indices.append(len(label))
         for i in range(len(change_indices)-1):
-            c = int(label[start])
             start = change_indices[i]
             end = change_indices[i+1]
-            gradcam.reset_info()
-            gradcam.cal_grad(outputs[start:end], c)
-            result = gradcam.cal_cam()
+            c = int(label[start])
             for j in range(start, end):
-                for k, cams in result.items():
+                model.zero_grad()
+                gradcam.cal_grad(outputs[j:j+1], c)
+                result = gradcam.cal_cam(j)
+                for k, cam in result.items():
                     save_folder = os.path.join(config['feature']['path'], k)
                     if not os.path.exists(save_folder):
                         os.makedirs(save_folder)
                     # save record
                     np.savez(os.path.join(save_folder, '{}.npz'.format(uuids[j])), 
-                        cam=cams[j-start].numpy(),
-                        feature=gradcam.vis_info['output'][j-start].numpy())
+                        cam=cam.numpy(),
+                        feature=gradcam.vis_info[k]['output'][j].numpy())
                 # update scores
                 scores_per_class[c].add_(scores[j])
-    
+        gradcam.reset_info()
+
     # average scores per class
     for c in range(test_loader.dataset.NUM_CLASSES):
         scores_per_class[c].div_(len(test_loader.dataset.class_samples[c]))

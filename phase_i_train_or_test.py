@@ -11,7 +11,7 @@ from utils.general_util import create_criterion, create_lr_scheduler, create_opt
     set_random_seed
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--config', type=str, default='cifar10-LT_resnet18',
+parser.add_argument('-c', '--config', type=str, default='example',
                     help='Which config is loaded from configs/phase_i')
 parser.add_argument('-d', '--device', type=int, default=None,
                     help='Which gpu_id to use. If None, use cpu')
@@ -98,8 +98,8 @@ def phase_i_train(train_loader, test_loader, model, device, train_state, config,
             log_loss += len(img) * loss.item()
 
             # only save first batch images to tensorboard
-            if i_batch == 0:
-                tensorboard_writer.add_image('image/train', img, i_epoch)
+            # if i_batch == 0:
+            #     tensorboard_writer.add_image('image/train', img[0].cpu(), i_epoch)
             if (i_batch + 1) % config['log']['log_interval'] == 0:
                 log_loss = log_loss / log_samples
                 log_acc = log_corrects / log_samples
@@ -149,8 +149,8 @@ def phase_i_test(test_loader, model, device, config, logger, tensorboard_writer=
             loss = criterion(outputs, label)
 
             # only save first batch images to tensorboard
-            if i_epoch is not None and i_batch == 0:
-                tensorboard_writer.add_image('image/test', img, i_epoch)
+            # if i_epoch is not None and i_batch == 0:
+            #     tensorboard_writer.add_image('image/test', img[0].cpu(), i_epoch)
 
             total_samples += len(img)
             total_corrects += (prediction == label).type(torch.int32).sum().item()

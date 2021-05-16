@@ -9,11 +9,11 @@ class FeatureDataset(Dataset):
     """This class is the dataset in stage 3."""
 
     def __init__(self, image_dataset, config):
-        self.Nt = config['Nt']
-        self.Na = config['Na']
-        self.Nf = config['Nf']
-        self.ts = config['ts']
-        self.tg = config['tg']
+        self.Nt = config['finetune']['Nt']
+        self.Na = config['finetune']['Na']
+        self.Nf = config['finetune']['Nf']
+        self.ts = config['finetune']['ts']
+        self.tg = config['finetune']['tg']
         self.feature_folder = config['feature']['path']
         self.cam_layer = config['finetune']['cam_layer']
 
@@ -22,11 +22,11 @@ class FeatureDataset(Dataset):
         self.class_samples = image_dataset.class_samples
         self.head_class_samples = []
         self.tail_class_samples = []
-        for c, samples in self.class_samples:
+        for c, samples in self.class_samples.items():
             if c in self.head_classes:
-                self.head_class_samples += samples
+                self.head_class_samples.extend(samples)
             else:
-                self.tail_class_samples += samples
+                self.tail_class_samples.extend(samples)
 
         scores_per_class = torch.load(os.path.join(config['feature']['path'], 'scores_per_class.pt'))
         for c in range(self.NUM_CLASSES):
@@ -50,10 +50,10 @@ class FeatureDataset(Dataset):
         confusing_classes = self.confusing_head_classes[tail_class]
         for head_class in confusing_classes:
             # sample one sample from each of the Na head classes
-            confusing_sample = random.sample(self.class_samples[head_class], 1)     
+            confusing_sample = random.choice(self.class_samples[head_class])
             head_feature, head_cam = self.read_feature(confusing_sample)
             head_feature = np.where(head_cam < self.tg, head_feature, 0)
-            combine_mask = np.random.rand(head_feature.shape[0], head_feature.shape[1])
+            combine_mask = np.random.rand(head_feature.shape[1], head_feature.shape[2])
             combine_mask = np.where(combine_mask > 0.5, 1, 0)
             fusion_feature = combine_mask * tail_feature + (1-combine_mask) * head_feature
             tail_features.append(fusion_feature)
@@ -84,6 +84,6 @@ class FeatureDataset(Dataset):
             features += batch_features
             labels.append(label)
 
-        input_tensor = torch.from_numpy(np.stack(features)).contiguous()
+        input_tensor = torch.from_numpy(np.stack(features)).float().contiguous()
         label = torch.cat(labels)
         return input_tensor, label

@@ -229,7 +229,7 @@ class ResNet(nn.Module):
         return self.feature_sub_net(x)
 
     def forward_classifier(self, x: Tensor) -> Tensor:
-        return self.classifer(x)
+        return self.classifier(x)
 
     def forward(self, x: Tensor) -> Tensor:
         x = self.forward_feature_sub_net(x)

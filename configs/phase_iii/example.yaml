@@ -1,7 +1,7 @@
 random_seed: 1314  # null for no seed
 
 dataset:
-  name: cifar10-LT
+  name: example
   kwargs:
     im: 10
 
@@ -14,14 +14,13 @@ phase: train  # train or test
 
 train:
   num_epoch: 17  # num_epoch = 6400 * batch_size / number of samples in training set
-  batch_size: 128
+  batch_size: 16
   loss: SoftmaxCrossEntropy
   optimizer:
     name: SGD  # class name in torch.optim
     kwargs: 
       lr: 0.001
       momentum: 0.9
-  lr: 0.001
   lr_scheduler:  
     name: StepLR
     kwargs:
@@ -30,20 +29,20 @@ train:
   gradient_clip: null  # null or float
 
 test:
-  batch_size: 128
+  batch_size: 16
   loss: SoftmaxCrossEntropy
 
 finetune:
-  Nt: 16  # Nt = batch size / (2 * (1 + Na))
-  Na: 3
-  Nf: 3
+  Nt: 4  # Nt = batch size / (2 * (1 + Na))
+  Na: 1
+  Nf: 1
   ts: 0.8
   tg: 0.2
   cam_layer: 'layer4'
 
 checkpoint:
   path: checkpoints/
-  load_checkpoint: null  # like 'best_model.pt'. if none, no load checkpoint
+  load_checkpoint: 'checkpoints/phase_i/example/default_setting/best_model.pt'  # like 'best_model.pt'. if none, no load checkpoint
   save_checkpoint_interval: 5 # only for train phase. epoch number
 
 log:

@@ -1,7 +1,7 @@
 random_seed: 1314  # null for no seed
 
 dataset:
-  name: cifar10-LT
+  name: example
   kwargs: 
     im: 10
 

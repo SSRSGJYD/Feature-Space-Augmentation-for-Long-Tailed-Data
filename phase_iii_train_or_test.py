@@ -12,7 +12,7 @@ from utils.general_util import create_criterion, create_lr_scheduler, create_opt
     set_random_seed
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--config', type=str, default='cifar10-LT_resnet18',
+parser.add_argument('-c', '--config', type=str, default='example',
                     help='Which config is loaded from configs/phase_iii')
 parser.add_argument('-d', '--device', type=int, default=None,
                     help='Which gpu_id to use. If None, use cpu')
@@ -43,18 +43,16 @@ def main():
     test_loader = torch.utils.data.DataLoader(test_dataset, config['test']['batch_size'], shuffle=False)
 
     model = get_model(config['model']['name'], num_classes=test_dataset.NUM_CLASSES, **config['model']['kwargs'])
-    if config['checkpoint']['load_checkpoint'] is not None:
-        load_checkpoint_file = os.path.join(checkpoints_folder, config['checkpoint']['load_checkpoint'])
-        model_state, train_state = load_state_dict_from_checkpoint(load_checkpoint_file)
-        model.load_state_dict(model_state)
-    else:
-        train_state = default_train_state
+    assert config['checkpoint']['load_checkpoint'] is not None
+    model_state, train_state = load_state_dict_from_checkpoint(config['checkpoint']['load_checkpoint'])
+    model.load_state_dict(model_state)
+    
     model = model.to(device)
 
     if config['phase'] == 'train':
         train_dataset = get_dataset(config['dataset']['name'], train=True, **config['dataset']['kwargs'])
         feature_dataset = FeatureDataset(train_dataset, config)
-        train_loader = torch.utils.data.DataLoader(feature_dataset, config['train']['batch_size'], shuffle=True)
+        train_loader = torch.utils.data.DataLoader(feature_dataset, config['train']['batch_size'], shuffle=True, collate_fn=feature_dataset.collate_fn)
         phase_iii_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
                       checkpoints_folder)
     else:
@@ -148,8 +146,8 @@ def phase_iii_test(test_loader, model, device, config, logger, tensorboard_write
             loss = criterion(outputs, label)
 
             # only save first batch images to tensorboard
-            if i_epoch is not None and i_batch == 0:
-                tensorboard_writer.add_image('image/test', img, i_epoch)
+            # if i_epoch is not None and i_batch == 0:
+            #     tensorboard_writer.add_image('image/test', img[0], i_epoch)
 
             total_samples += len(img)
             total_corrects += (prediction == label).type(torch.int32).sum().item()
