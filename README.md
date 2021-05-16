@@ -26,10 +26,6 @@ Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Lo
     │   ├── __init__.py                     # include get_model()
     │   ├── resnet.py
     │   └── ...
-    ├── process/                            # train, test code for 3 phases
-    │   ├── phase_i_train_or_test.py
-    │   ├── phase_ii_extract_feature.py
-    │   └── phase_iii_train_or_test.py
     ├── utils/                              # Tools and utilities
     ├── checkpoints/                        # save model checkpoints
     │   ├── phase_i/
@@ -42,7 +38,10 @@ Unofficial implementation for ECCV 2020 paper "Feature Space Augmentation for Lo
     │   │   │   └── ...
     │   │   └── ...
     │   └── phase_iii/
-    ├── log/                                # logging files and backup configs, same structure as ./checkpoints
+    ├── log/                                # logging files and backup configs, same structure as 
+    ├── phase_i_train_or_test.py			# phase 1 training & test script
+    ├── phase_ii_extract_feature.py			# phase 2 script
+    ├── phase_iii_train_or_test.py			# phase 3 training & test script
     ├── run_summary/                        # tensorboard summary, same structure as ./checkpoints
     ├── .gitignore                          
     ├── LICENSE
