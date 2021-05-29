@@ -3,10 +3,10 @@ random_seed: 1314  # null for no seed
 dataset:
   name: Cifar10-LT
   kwargs:
-    im: 200
+    im: 10
 
 model:
-  name: resnet18
+  name: resnet34
   kwargs:
     pretrained: false
 
@@ -43,7 +43,7 @@ finetune:
 
 checkpoint:
   path: checkpoints/
-  load_checkpoint: 'checkpoints/phase_i/cifar10-LT_resnet18/im_200/model_epoch_0300.pt'  # like 'best_model.pt'. if none, no load checkpoint
+  load_checkpoint: 'checkpoints/phase_i/cifar10-LT_resnet34/default_setting/best_model.pt'  # like 'best_model.pt'. if none, no load checkpoint
   save_checkpoint_interval: 5 # only for train phase. epoch number
 
 log:
@@ -54,4 +54,4 @@ tensorboard:
   path: run_summary/
 
 feature:
-  path: feature/cifar10-LT_resnet18/im_200/
+  path: feature/

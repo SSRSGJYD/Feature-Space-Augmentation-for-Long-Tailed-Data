@@ -42,6 +42,7 @@ def main():
 def phase_ii_test(test_loader, model, gradcam, device, config):
     model.eval()
     scores_per_class = torch.zeros((test_loader.dataset.NUM_CLASSES, test_loader.dataset.NUM_CLASSES))
+    path_prefix = os.path.join(args.config, args.note)
     
     for i_batch, (img, label, uuids) in enumerate(test_loader):
         img: torch.FloatTensor = img.to(device)
@@ -66,13 +67,13 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
                 gradcam.cal_grad(outputs[j:j+1], c)
                 result = gradcam.cal_cam(j)
                 for k, cam in result.items():
-                    save_folder = os.path.join(config['feature']['path'], k)
+                    save_folder = os.path.join(config['feature']['path'], path_prefix, k)
                     if not os.path.exists(save_folder):
                         os.makedirs(save_folder)
                     # save record
                     np.savez(os.path.join(save_folder, '{}.npz'.format(uuids[j])), 
                         cam=cam.numpy(),
-                        feature=gradcam.vis_info[k]['output'][j].numpy())
+                        feature=gradcam.vis_info[k]['output'][j].cpu().numpy())
                 # update scores
                 scores_per_class[c].add_(scores[j])
         gradcam.reset_info()
@@ -80,7 +81,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
     # average scores per class
     for c in range(test_loader.dataset.NUM_CLASSES):
         scores_per_class[c].div_(len(test_loader.dataset.class_samples[c]))
-    torch.save(scores_per_class, os.path.join(config['feature']['path'], 'scores_per_class.pt'))
+    torch.save(scores_per_class, os.path.join(config['feature']['path'], path_prefix, 'scores_per_class.pt'))
     
 
 if __name__ == '__main__':

@@ -70,8 +70,9 @@ def phase_iii_train(train_loader, test_loader, model, device, train_state, confi
     criterion = create_criterion(config['train']['loss'])
     # actually train+test for every epoch
     best_acc = train_state['best_acc']
-    for i_epoch in range(train_state['epoch'], config['train']['num_epoch'] + 1):
-        logger.info('Begin to train epoch %d/%d...' % (i_epoch, config['train']['num_epoch']))
+    start_epoch = train_state['epoch']
+    for i_epoch in range(start_epoch + 1, start_epoch + 1 + config['train']['num_epoch']):
+        logger.info('Begin to train epoch %d/%d...' % (i_epoch, start_epoch + config['train']['num_epoch']))
         total_samples, log_samples = 0, 0
         total_corrects, log_corrects = 0, 0
         total_loss, log_loss = 0.0, 0.0
@@ -109,13 +110,13 @@ def phase_iii_train(train_loader, test_loader, model, device, train_state, confi
         epoch_loss = total_loss / total_samples
         epoch_acc = total_corrects / total_samples
         logger.info('finish train epoch %d/%d. loss: %1.4f. acc: %1.4f'
-                    % (i_epoch, config['train']['num_epoch'], epoch_loss, epoch_acc))
+                    % (i_epoch, start_epoch + config['train']['num_epoch'], epoch_loss, epoch_acc))
         tensorboard_writer.add_scalar('loss/train', epoch_loss, i_epoch)
         tensorboard_writer.add_scalar('acc/train', epoch_acc, i_epoch)
         test_acc = phase_iii_test(test_loader, model, device, config, logger, tensorboard_writer, i_epoch)
         train_state['epoch'] = i_epoch
         train_state['acc'] = test_acc
-        if i_epoch % config['checkpoint']['save_checkpoint_interval'] == 0 or i_epoch == config['train']['num_epoch']:
+        if i_epoch % config['checkpoint']['save_checkpoint_interval'] == 0 or i_epoch == (start_epoch + config['train']['num_epoch']):
             save_state_dict_to_checkpoint(os.path.join(checkpoint_folder, 'model_epoch_%04d.pt' % i_epoch),
                                           model.state_dict(), train_state)
         if test_acc > best_acc:

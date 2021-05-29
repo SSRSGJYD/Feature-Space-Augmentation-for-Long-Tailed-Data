@@ -6,7 +6,7 @@ dataset:
     im: 200
 
 model:
-  name: resnet18
+  name: resnet34
   kwargs:
     pretrained: false
 
@@ -18,5 +18,5 @@ feature:
   cam_layers: 'layer4'  # separate by comma. e.g., 'layer3, layer4'
 
 checkpoint:
-  load_checkpoint: 'checkpoints/phase_i/cifar10-LT_resnet18/im_200/model_epoch_0300.pt'
+  load_checkpoint: 'checkpoints/phase_i/cifar10-LT_resnet34/im_200/model_epoch_0300.pt'
   
