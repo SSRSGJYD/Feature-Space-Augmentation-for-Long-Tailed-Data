@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch import Tensor
 from torchvision.models.utils import load_state_dict_from_url
 
-__all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
+__all__ = ['ResNet', 'resnet10', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
 
 model_urls = {
@@ -255,6 +255,9 @@ def _resnet(
         model.load_state_dict(state_dict)
     return model
 
+def resnet10(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
+    return _resnet('resnet10', BasicBlock, [1, 1, 1, 1], pretrained, progress,
+                   **kwargs)
 
 def resnet18(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
     r"""ResNet-18 model from
