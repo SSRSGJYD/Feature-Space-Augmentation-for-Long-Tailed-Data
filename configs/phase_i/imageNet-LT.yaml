@@ -1,0 +1,48 @@
+random_seed: 1314  # null for no seed
+
+dataset:
+  name: ImageNet-LT
+  kwargs: 
+    im: 256
+
+model:
+  name: resnet10
+  kwargs:
+    pretrained: false
+
+phase: train  # train or test
+
+train:
+  num_epoch: 100
+  batch_size: 128
+  loss: SoftmaxCrossEntropy
+  optimizer:
+    name: Adam  # class name in torch.optim
+    kwargs: 
+      lr: 0.0002
+      eps: 0.0000006
+  lr_scheduler:
+    name: StepLR  # class name in torch.optim.lr_scheduler
+    kwargs:
+      step_size: 20  # epoch step
+      gamma: 0.5
+  gradient_clip: null  # null or float
+
+test:
+  batch_size: 128
+  loss: SoftmaxCrossEntropy
+
+checkpoint:
+  path: checkpoints/
+  load_checkpoint: null  # like 'best_model.pt'. if none, no load checkpoint
+  save_checkpoint_interval: 20 # only for train phase. epoch number
+
+log:
+  path: log/
+  log_interval: 200  # only for train phase. batch number
+
+tensorboard:
+  path: run_summary/
+
+feature:
+  path: feature/

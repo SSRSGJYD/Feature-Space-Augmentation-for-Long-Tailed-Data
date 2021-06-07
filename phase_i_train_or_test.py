@@ -39,7 +39,7 @@ def main():
 
     device = get_device(args.device)
     test_dataset = get_dataset(config['dataset']['name'], train=False, **config['dataset']['kwargs'])
-    test_loader = torch.utils.data.DataLoader(test_dataset, config['test']['batch_size'], shuffle=False)
+    test_loader = torch.utils.data.DataLoader(test_dataset, config['test']['batch_size'], shuffle=False, num_workers=4)
 
     model = get_model(config['model']['name'], num_classes=test_dataset.NUM_CLASSES, **config['model']['kwargs'])
     if config['checkpoint']['load_checkpoint'] is not None:
@@ -52,7 +52,7 @@ def main():
 
     if config['phase'] == 'train':
         train_dataset = get_dataset(config['dataset']['name'], train=True, **config['dataset']['kwargs'])
-        train_loader = torch.utils.data.DataLoader(train_dataset, config['train']['batch_size'], shuffle=True)
+        train_loader = torch.utils.data.DataLoader(train_dataset, config['train']['batch_size'], shuffle=True, num_workers=4)
         phase_i_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
                       checkpoints_folder)
     else:
