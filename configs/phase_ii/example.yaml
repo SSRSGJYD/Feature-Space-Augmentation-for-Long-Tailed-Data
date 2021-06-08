@@ -17,6 +17,9 @@ feature:
   path: feature/
   cam_layers: 'layer4'  # separate by comma. e.g., 'layer3, layer4'
 
+vis:
+  path: vis/
+
 checkpoint:
   load_checkpoint: 'checkpoints/phase_i/example/default_setting/best_model.pt'
   
