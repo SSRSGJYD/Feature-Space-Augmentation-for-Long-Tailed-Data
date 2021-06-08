@@ -4,6 +4,7 @@ from PIL import Image
 import os
 import torch.utils.data
 import torch.nn.functional as F
+from torchvision.transforms import ToPILImage
 from datasets import get_dataset
 from models import get_model
 from utils.general_util import get_device, load_config, load_state_dict_from_checkpoint, set_random_seed
@@ -42,7 +43,8 @@ def main():
 
 def phase_ii_test(test_loader, model, gradcam, device, config):
     model.eval()
-    
+    transform = ToPILImage()
+
     for i_batch, (img, label, uuids, orig_img) in enumerate(test_loader):
         img: torch.FloatTensor = img.to(device)
         label: torch.IntTensor = label.to(device)
@@ -66,7 +68,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
                 gradcam.cal_grad(outputs[j:j+1], c)
                 result = gradcam.cal_cam(j)
                 for k, cam in result.items():
-                    image = Image.fromarray(orig_img[j].numpy())
+                    image = transform(orig_img[j])
                     cam=cam.numpy()
                     cam = np.uint8(cam * 255)  # Scale between 0-255 to visualize
                     cam = np.uint8(Image.fromarray(cam).resize((image.shape[1],
