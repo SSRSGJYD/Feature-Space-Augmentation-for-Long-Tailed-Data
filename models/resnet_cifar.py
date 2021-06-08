@@ -128,8 +128,4 @@ def resnet110(num_classes=10, use_norm=False, **kwargs):
     return ResNet_s(BasicBlock, [18, 18, 18], num_classes=num_classes, use_norm=use_norm)
 
 def resnet1202(num_classes=10, use_norm=False, **kwargs):
-<<<<<<< HEAD
     return ResNet_s(BasicBlock, [200, 200, 200], num_classes=num_classes, use_norm=use_norm)
-=======
-    return ResNet_s(BasicBlock, [200, 200, 200], num_classes=num_classes, use_norm=use_norm)
->>>>>>> e05c85c4a82d5bf1cefd9f77b5a64075f2708cfe
