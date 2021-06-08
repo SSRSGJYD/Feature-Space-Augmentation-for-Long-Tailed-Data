@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch import Tensor
 from torchvision.models.utils import load_state_dict_from_url
 
-__all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
+__all__ = ['ResNet', 'resnet10', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
 
 model_urls = {
@@ -255,11 +255,13 @@ def _resnet(
         model.load_state_dict(state_dict)
     return model
 
+def resnet10(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
+    return _resnet('resnet10', BasicBlock, [1, 1, 1, 1], pretrained, progress,
+                   **kwargs)
 
 def resnet18(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
     r"""ResNet-18 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
@@ -271,7 +273,6 @@ def resnet18(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> 
 def resnet34(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
     r"""ResNet-34 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
@@ -283,7 +284,6 @@ def resnet34(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> 
 def resnet50(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
     r"""ResNet-50 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
@@ -295,7 +295,6 @@ def resnet50(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> 
 def resnet101(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
     r"""ResNet-101 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
@@ -307,7 +306,6 @@ def resnet101(pretrained: bool = False, progress: bool = True, **kwargs: Any) ->
 def resnet152(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> ResNet:
     r"""ResNet-152 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
