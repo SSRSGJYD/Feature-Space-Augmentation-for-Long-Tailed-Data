@@ -15,6 +15,8 @@ parser.add_argument('-c', '--config', type=str, default='example',
                     help='Which config is loaded from configs/phase_i')
 parser.add_argument('-d', '--device', type=int, default=None,
                     help='Which gpu_id to use. If None, use cpu')
+parser.add_argument('-w', '--workers', type=int, default=0,
+                    help='Number of workers in data loader')
 parser.add_argument('-n', '--note', type=str, default='default_setting',
                     help='Note to identify this experiment, like "first_version"... Should not contain space')
 parser.add_argument('-v', '--verbose', action='store_true',
@@ -39,7 +41,7 @@ def main():
 
     device = get_device(args.device)
     test_dataset = get_dataset(config['dataset']['name'], train=False, **config['dataset']['kwargs'])
-    test_loader = torch.utils.data.DataLoader(test_dataset, config['test']['batch_size'], shuffle=False, num_workers=4)
+    test_loader = torch.utils.data.DataLoader(test_dataset, config['test']['batch_size'], shuffle=False, num_workers=args.workers)
 
     model = get_model(config['model']['name'], num_classes=test_dataset.NUM_CLASSES, **config['model']['kwargs'])
     if config['checkpoint']['load_checkpoint'] is not None:
@@ -52,7 +54,7 @@ def main():
 
     if config['phase'] == 'train':
         train_dataset = get_dataset(config['dataset']['name'], train=True, **config['dataset']['kwargs'])
-        train_loader = torch.utils.data.DataLoader(train_dataset, config['train']['batch_size'], shuffle=True, num_workers=4)
+        train_loader = torch.utils.data.DataLoader(train_dataset, config['train']['batch_size'], shuffle=True, num_workers=args.workers)
         phase_i_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
                       checkpoints_folder)
     else:
