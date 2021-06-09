@@ -52,15 +52,14 @@ def main():
         train_dataset = get_dataset(config['dataset']['name'], train=True, **config['dataset']['kwargs'])
         feature_dataset = FeatureDataset(train_dataset, config)
         train_loader = torch.utils.data.DataLoader(feature_dataset, config['train']['batch_size'], shuffle=True, collate_fn=feature_dataset.collate_fn, num_workers=4)
-        phase_iii_train(train_dataset, train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
+        phase_iii_train( train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
                       checkpoints_folder)
     else:
-        train_dataset = get_dataset(config['dataset']['name'], train=True, **config['dataset']['kwargs'])
-        phase_iii_test(train_dataset, test_loader, model, device, config, logger)
+        phase_iii_test(, test_loader, model, device, config, logger)
     tensorboard_writer.close()
 
 
-def phase_iii_train(train_dataset, train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
+def phase_iii_train(train_loader, test_loader, model, device, train_state, config, logger, tensorboard_writer,
                   checkpoint_folder):
     trained_parameters = model.classifier.parameters()  # only classifier is optimized
     optimizer = create_optimizer(config['train']['optimizer']['name'], trained_parameters, **config['train']['optimizer']['kwargs'])
@@ -110,7 +109,7 @@ def phase_iii_train(train_dataset, train_loader, test_loader, model, device, tra
                     % (i_epoch, config['train']['num_epoch'], epoch_loss, epoch_acc))
         tensorboard_writer.add_scalar('loss/train', epoch_loss, i_epoch)
         tensorboard_writer.add_scalar('acc/train', epoch_acc, i_epoch)
-        test_acc = phase_iii_test(train_dataset, test_loader, model, device, config, logger, tensorboard_writer, i_epoch)
+        test_acc = phase_iii_test( test_loader, model, device, config, logger, tensorboard_writer, i_epoch)
         train_state['epoch'] = i_epoch
         train_state['acc'] = test_acc
         if i_epoch % config['checkpoint']['save_checkpoint_interval'] == 0 or i_epoch == config['train']['num_epoch']:
@@ -124,7 +123,7 @@ def phase_iii_train(train_dataset, train_loader, test_loader, model, device, tra
                                           model.state_dict(), train_state)
 
 
-def phase_iii_test(train_dataset, test_loader, model, device, config, logger, tensorboard_writer=None, i_epoch=None):
+def phase_iii_test(test_loader, model, device, config, logger, tensorboard_writer=None, i_epoch=None):
     criterion = create_criterion(config['test']['loss'])
 
     if i_epoch is None:
@@ -135,12 +134,12 @@ def phase_iii_test(train_dataset, test_loader, model, device, config, logger, te
     with torch.no_grad():
         total_samples = 0
 
-        many_samples = 0
-        medium_samples = 0
-        few_samples = 0
-        many_corrects = 0
-        medium_corrects = 0
-        few_corrects = 0
+        # many_samples = 0
+        # medium_samples = 0
+        # few_samples = 0
+        # many_corrects = 0
+        # medium_corrects = 0
+        # few_corrects = 0
 
         total_corrects = 0
         total_loss = 0.0
@@ -151,16 +150,16 @@ def phase_iii_test(train_dataset, test_loader, model, device, config, logger, te
             prediction = torch.argmax(outputs, 1)
             loss = criterion(outputs, label)
 
-            for i in range(len(img)):
-                if label.cpu().numpy()[i] in train_dataset.many_shot:
-                    many_samples += 1
-                    many_corrects += 1 if prediction.cpu().numpy()[i] == label.cpu().numpy()[i] else 0
-                elif label.cpu().numpy()[i] in train_dataset.medium_shot:
-                    medium_samples += 1
-                    medium_corrects += 1 if prediction.cpu().numpy()[i] == label.cpu().numpy()[i] else 0
-                elif label.cpu().numpy()[i] in train_dataset.few_shot:
-                    few_samples += 1
-                    few_corrects += 1 if prediction.cpu().numpy()[i] == label.cpu().numpy()[i] else 0
+            # for i in range(len(img)):
+            #     if label.cpu().numpy()[i] in train_dataset.many_shot:
+            #         many_samples += 1
+            #         many_corrects += 1 if prediction.cpu().numpy()[i] == label.cpu().numpy()[i] else 0
+            #     elif label.cpu().numpy()[i] in train_dataset.medium_shot:
+            #         medium_samples += 1
+            #         medium_corrects += 1 if prediction.cpu().numpy()[i] == label.cpu().numpy()[i] else 0
+            #     elif label.cpu().numpy()[i] in train_dataset.few_shot:
+            #         few_samples += 1
+            #         few_corrects += 1 if prediction.cpu().numpy()[i] == label.cpu().numpy()[i] else 0
 
 
             # only save first batch images to tensorboard
@@ -171,15 +170,21 @@ def phase_iii_test(train_dataset, test_loader, model, device, config, logger, te
             total_loss += len(img) * loss.item()
         epoch_loss = total_loss / total_samples
         epoch_acc = total_corrects / total_samples
-        many_acc = many_corrects / many_samples
-        medium_acc = medium_corrects / medium_samples
-        few_acc = few_corrects / few_samples
+        # many_acc = many_corrects / many_samples
+        # medium_acc = medium_corrects / medium_samples
+        # few_acc = few_corrects / few_samples
         if i_epoch is None:
-            logger.info('finish test. loss: %1.4f. acc: %1.4f many acc: %1.4f medium acc: %1.4f few acc: %1.4f' % (epoch_loss, epoch_acc, many_acc, medium_acc, few_acc))
+            logger.info('finish test. loss: %1.4f. acc: %1.4f ' % (epoch_loss, epoch_acc))
         else:
-            logger.info('finish epoch %d. loss: %1.4f. acc: %1.4f many acc: %1.4f medium acc: %1.4f few acc: %1.4f' % (i_epoch, epoch_loss, epoch_acc, many_acc, medium_acc, few_acc))
+            logger.info('finish epoch %d. loss: %1.4f. acc: %1.4f ' % (i_epoch, epoch_loss, epoch_acc))
             tensorboard_writer.add_scalar('loss/test', epoch_loss, i_epoch)
             tensorboard_writer.add_scalar('acc/test', epoch_acc, i_epoch)
+        # if i_epoch is None:
+        #     logger.info('finish test. loss: %1.4f. acc: %1.4f many acc: %1.4f medium acc: %1.4f few acc: %1.4f' % (epoch_loss, epoch_acc, many_acc, medium_acc, few_acc))
+        # else:
+        #     logger.info('finish epoch %d. loss: %1.4f. acc: %1.4f many acc: %1.4f medium acc: %1.4f few acc: %1.4f' % (i_epoch, epoch_loss, epoch_acc, many_acc, medium_acc, few_acc))
+        #     tensorboard_writer.add_scalar('loss/test', epoch_loss, i_epoch)
+        #     tensorboard_writer.add_scalar('acc/test', epoch_acc, i_epoch)
     return epoch_acc
 
 

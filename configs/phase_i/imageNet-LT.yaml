@@ -17,15 +17,16 @@ train:
   batch_size: 128
   loss: SoftmaxCrossEntropy
   optimizer:
-    name: Adam  # class name in torch.optim
+    name: SGD  # class name in torch.optim
     kwargs: 
-      lr: 0.0002
-      eps: 0.0000006
+      lr: 0.2
+      momentum: 0.9
+      weight_decay: 0.0001
   lr_scheduler:
-    name: StepLR  # class name in torch.optim.lr_scheduler
+    name: MultiStepLR  # class name in torch.optim.lr_scheduler
     kwargs:
-      step_size: 20  # epoch step
-      gamma: 0.5
+      milestones: [30,60,80]  # epoch step
+      gamma: 0.1
   gradient_clip: null  # null or float
 
 test:
