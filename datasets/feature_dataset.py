@@ -65,6 +65,7 @@ class FeatureDataset(Dataset):
     def __getitem__(self, idx):
         batch_features = self.fusion_feature(self.tail_class_samples[idx])
         label = torch.zeros(2*(1+self.Na), dtype=torch.long)
+        label[:1+self.Na] = self.tail_class_samples[idx][0]
 
         # head class samples
         idx = 1 + self.Na
