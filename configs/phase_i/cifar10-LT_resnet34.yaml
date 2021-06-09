@@ -6,7 +6,7 @@ dataset:
     im: 200
 
 model:
-  name: resnet18
+  name: resnet34
   kwargs:
     pretrained: false
 

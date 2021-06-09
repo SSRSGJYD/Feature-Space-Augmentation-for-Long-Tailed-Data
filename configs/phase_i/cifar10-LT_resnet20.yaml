@@ -3,17 +3,17 @@ random_seed: 1314  # null for no seed
 dataset:
   name: Cifar10-LT
   kwargs: 
-    im: 200
+    im: 10
 
 model:
-  name: resnet18
+  name: resnet20
   kwargs:
     pretrained: false
 
 phase: train  # train or test
 
 train:
-  num_epoch: 300
+  num_epoch: 200
   batch_size: 128
   loss: SoftmaxCrossEntropy
   optimizer:
@@ -21,11 +21,12 @@ train:
     kwargs: 
       lr: 0.1
       momentum: 0.9
+      weight_decay: 0.0002
   lr_scheduler:
-    name: StepLR  # class name in torch.optim.lr_scheduler
+    name: warmup  # class name in torch.optim.lr_scheduler
     kwargs:
-      step_size: 150  # epoch step
-      gamma: 0.1
+      gamma: 0.01
+      milestones: [160, 180]
   gradient_clip: null  # null or float
 
 test:
