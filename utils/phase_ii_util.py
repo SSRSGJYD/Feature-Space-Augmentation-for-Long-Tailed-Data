@@ -1,7 +1,8 @@
 import copy
 from types import FunctionType
-from PIL import Image
 import matplotlib.cm as mpl_color_map
+import numpy as np
+from PIL import Image
 import torch
 import torch.nn.functional as F
 
@@ -84,13 +85,13 @@ class GradCam(object):
             weights = torch.mean(grads_val, dim=(1, 2), keepdim=True)
             cam = weights * feature
             cam = torch.sum(cam, dim=0)
-            cam = F.relu(cam) # (1, H, W)
+            cam = F.relu(cam) # (H, W)
             # normalize to (0, 1)
             max_value = torch.max(cam) # (1)
             min_value = torch.min(cam) # (1)
             cam.sub_(min_value).div_(max_value-min_value)
             # save to vis_info
-            result[key] = cam[0].cpu().detach()
+            result[key] = cam.cpu().detach()
         return result
 
     def reset_info(self):

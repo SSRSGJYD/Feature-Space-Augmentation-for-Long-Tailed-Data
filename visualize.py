@@ -71,15 +71,15 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
                     image = transform(orig_img[j])
                     cam=cam.numpy()
                     cam = np.uint8(cam * 255)  # Scale between 0-255 to visualize
-                    cam = np.uint8(Image.fromarray(cam).resize((image.shape[1],
-                                image.shape[2]), Image.ANTIALIAS))/255
+                    cam = np.uint8(Image.fromarray(cam).resize((orig_img.shape[2],
+                                orig_img.shape[3]), Image.ANTIALIAS))/255
                     _, heatmap_on_image = apply_colormap_on_image(image, cam, 'jet')
 
                     save_folder = os.path.join(config['vis']['path'], k)
                     if not os.path.exists(save_folder):
                         os.makedirs(save_folder)
                     # save image
-                    heatmap_on_image.save(os.path.join(save_folder, uuids[j]+'.png'))
+                    heatmap_on_image.save(os.path.join(save_folder, str(uuids[j])+'.png'))
 
         gradcam.reset_info()
 

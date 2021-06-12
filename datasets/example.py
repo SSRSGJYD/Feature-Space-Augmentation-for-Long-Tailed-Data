@@ -6,9 +6,10 @@ from torchvision import transforms
 class ExampleDataset(torch.utils.data.Dataset):
     NAME = 'example'
 
-    def __init__(self, train: bool, im: int, **kwargs):
+    def __init__(self, train: bool, im: int, visualize=False, **kwargs):
         super().__init__()
         self.IM = im
+        self.visualize = visualize
         self.NUM_CLASSES = 2
         self.head_classes = set([0])
         if train:
@@ -34,7 +35,10 @@ class ExampleDataset(torch.utils.data.Dataset):
         c, uuid = self.samples[item]
         image = c * 255 * np.ones((224, 224, 3), dtype=np.float)
         tensor = self.transform(image).float()
-        return tensor, c, uuid
+        if self.visualize:
+            return tensor, c, uuid, c * 255 * np.ones((3, 224, 224), dtype=np.float)
+        else:
+            return tensor, c, uuid
 
     def __len__(self):
         return len(self.samples)
