@@ -38,3 +38,9 @@ class ExampleDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.samples)
+
+    def load_sample(self, sample):
+        c, uuid = sample
+        image = c * 255 * np.ones((224, 224, 3), dtype=np.float)
+        tensor = self.transform(image).float()
+        return tensor, c, uuid

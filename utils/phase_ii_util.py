@@ -16,7 +16,6 @@ class GradCam(object):
         if hasattr(net, '_modules'):
             for m_name, module in net._modules.items():
                 if m_name in self.vis_layer_names:
-                    print(m_name)
                     if detach:
                         save_output_code = compile('def save_output' + m_name + '(module, input, output): '
                                                                                 'vis_info = getattr(self, "vis_info");'
@@ -107,7 +106,6 @@ class GradCam(object):
                 self.vis_info[m_name]['output'] = torch.cat(self.vis_info[m_name]['output'], dim=0)
             if isinstance(self.vis_info[m_name]['grad'], list) and len(self.vis_info[m_name]['grad']) > 0:
                 self.vis_info[m_name]['grad'] = torch.cat(self.vis_info[m_name]['grad'], dim=0)
-
 
 def apply_colormap_on_image(org_im, activation, colormap_name):
     """

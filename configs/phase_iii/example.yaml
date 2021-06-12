@@ -38,7 +38,6 @@ finetune:
   Nf: 1
   ts: 0.8
   tg: 0.2
-  cam_layer: 'layer4'
 
 checkpoint:
   path: checkpoints/
@@ -54,3 +53,4 @@ tensorboard:
 
 feature:
   path: feature/
+  cam_layers: 'layer4'
