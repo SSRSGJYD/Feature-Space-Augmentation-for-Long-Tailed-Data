@@ -43,7 +43,7 @@ class FeatureDataset(Dataset):
     def fusion_feature(self, tail_sample):
         # feature fusion
         tail_feature, tail_cam = self.read_feature(tail_sample)
-        tail_feature = np.where(tail_cam > self.ts, tail_feature, 0)
+        tail_feature_fg = np.where(tail_cam > self.ts, tail_feature, 0)
         tail_features = [tail_feature]
 
         tail_class = tail_sample[0]
@@ -52,10 +52,11 @@ class FeatureDataset(Dataset):
             # sample one sample from each of the Na head classes
             confusing_sample = random.choice(self.class_samples[head_class])
             head_feature, head_cam = self.read_feature(confusing_sample)
-            head_feature = np.where(head_cam < self.tg, head_feature, 0)
-            combine_mask = np.random.rand(head_feature.shape[1], head_feature.shape[2])
-            combine_mask = np.where(combine_mask > 0.5, 1, 0)
-            fusion_feature = combine_mask * tail_feature + (1-combine_mask) * head_feature
+            head_feature_bg = np.where(head_cam < self.tg, head_feature, 0)
+            combine_mask = np.random.rand(head_feature_bg.shape[1], head_feature_bg.shape[2])
+            gamma = random.uniform(0, 1)
+            combine_mask = np.where(combine_mask > gamma, 1, 0)
+            fusion_feature = combine_mask * tail_feature_fg + (1 - combine_mask) * head_feature_bg
             tail_features.append(fusion_feature)
         return tail_features
  
