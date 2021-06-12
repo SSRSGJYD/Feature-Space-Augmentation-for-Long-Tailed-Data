@@ -68,6 +68,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
                 gradcam.cal_grad(outputs[j:j+1], c)
                 result = gradcam.cal_cam(j)
                 for k, cam in result.items():
+                    gradcam.vis_info[k]['grad'] = []
                     image = transform(orig_img[j])
                     cam=cam.numpy()
                     cam = np.uint8(cam * 255)  # Scale between 0-255 to visualize
