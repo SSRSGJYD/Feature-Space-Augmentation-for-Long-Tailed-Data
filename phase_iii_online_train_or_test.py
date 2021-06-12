@@ -101,6 +101,7 @@ def phase_iii_train(train_loader, test_loader, model, device, train_state, confi
             while idx < len(batch_tail_labels):
                 # calculate tail sample CAM
                 model.zero_grad()
+                gradcam.vis_info[layer]['grad'] = []
                 gradcam.cal_grad(outputs[idx:idx+1], batch_tail_labels[idx])
                 tail_cam = gradcam.cal_cam(idx)[layer]
                 tail_feature = features[idx]
@@ -111,6 +112,7 @@ def phase_iii_train(train_loader, test_loader, model, device, train_state, confi
                 # calculate head sample CAM and fusion feature
                 for i in range(train_loader.dataset.Na):
                     model.zero_grad()
+                    gradcam.vis_info[layer]['grad'] = []
                     gradcam.cal_grad(outputs[idx:idx+1], batch_tail_labels[idx])
                     head_cam = gradcam.cal_cam(idx)[layer]
                     head_feature = features[idx]
