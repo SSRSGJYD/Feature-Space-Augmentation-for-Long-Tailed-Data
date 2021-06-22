@@ -137,6 +137,8 @@ def phase_iii_train(train_loader, test_loader, model, device, train_state, confi
             model.train()
             model.zero_grad()
             gradcam.remove_hook()
+            input_features: torch.FloatTensor = input_features.to(device)
+            label: torch.IntTensor = label.to(device)
             outputs = model.forward_classifier(input_features)
             loss = criterion(outputs, label)
             prediction = torch.argmax(outputs, 1)
