@@ -1,8 +1,10 @@
 import torch.utils.data
+import torch
 from torchvision import transforms
 import torchvision.datasets as datasets
 from PIL import Image
 import os
+import numpy as np
 
 # Data transformation with augmentation
 data_transforms = {
@@ -17,7 +19,6 @@ data_transforms = {
         transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ]),
     'test': transforms.Compose([
         transforms.Resize(256),
@@ -32,13 +33,14 @@ class ImageNetLTDataset(torch.utils.data.Dataset):
     NUM_CLASSES = 1000
     IM = 256
 
-    def __init__(self, train: bool, **kwargs):
+    def __init__(self, train: bool, visualize: False, **kwargs):
         super().__init__()
         # root path is the folder name containing imageNet_ILSVRC2012 dataset
         self.rootpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imageNet_ILSVRC2012")
         self.img_path = []
         self.labels = []
         self.train = train
+        self.visualize = visualize
         if ( train ) :
             txtpath = os.path.join(self.rootpath, "ImageNet_LT_train.txt")
         else:
@@ -80,13 +82,26 @@ class ImageNetLTDataset(torch.utils.data.Dataset):
         label = self.labels[item]
         
         with open(os.path.join(self.rootpath,path), 'rb') as f:
-            sample = Image.open(f).convert('RGB')
+            raw = Image.open(f).convert('RGB')
 
         if(self.train):
-            sample = data_transforms["train"](sample)
+            sample = data_transforms["train"](raw)
         else:
-            sample = data_transforms["test"](sample)
-        return sample, label, os.path.basename(path).split('.')[0]
+            sample = data_transforms["test"](raw)
+        if self.visualize:
+            return sample, label, os.path.basename(path).split('.')[0], (data_transforms["val"](raw)*255).type(torch.uint8)
+        else:
+            return sample, label, os.path.basename(path).split('.')[0]
 
     def __len__(self):
         return len(self.labels)
+
+    def load_sample(self, sample):
+        c, uuid = sample
+        with open(os.path.join(self.rootpath,"train" if self.train else "val",uuid.split('_')[0],f'{uuid}.JPEG'), 'rb') as f:
+            image = Image.open(f).convert('RGB')
+        if(self.train):
+            tensor = data_transforms["train"](image).float()
+        else:
+            tensor = data_transforms["test"](image).float()
+        return tensor, c, uuid
