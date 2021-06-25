@@ -10,11 +10,12 @@ class Cifar10LTDataset(torchvision.datasets.CIFAR10):
     NUM_CLASSES = 10
     IM = None  # 10, 20, 50, 100 or 200
 
-    def __init__(self, train: bool, im: int, **kwargs):
+    def __init__(self, train: bool, im: int, visualize=False, **kwargs):
         super().__init__(root='./data', train=train, transform=None, target_transform=None, download=True)
         self.NUM_CLASSES = 10
         self.IM = 1.0 / im
         self.train = train
+        self.visualize = visualize
         self.head_classes = set([0, 1, 2, 3, 4, 5, 6])
         if train:
             img_num_list = self.get_img_num_per_cls()
@@ -42,6 +43,15 @@ class Cifar10LTDataset(torchvision.datasets.CIFAR10):
     def __getitem__(self, item):
         img, label = self.data[item], self.labels[item]
         img = Image.fromarray(img)
+        img = self.transform(img).float()
+        if self.visualize:
+            return img, label, item, label * 255 * np.ones((3, 224, 224), dtype=np.float)
+        else:
+            return img, label, item
+    
+    def load_sample(self, sample):
+        label, item = sample
+        img = Image.fromarray(self.data[item])
         img = self.transform(img).float()
         return img, label, item
 

@@ -1,0 +1,56 @@
+random_seed: 1314  # null for no seed
+
+dataset:
+  name: Cifar10-LT
+  kwargs:
+    im: 10
+
+model:
+  name: resnet20
+  kwargs:
+    pretrained: false
+
+phase: train  # train or test
+
+train:
+  num_epoch: 40  # num_epoch = 6400 * batch_size / number of samples in training set
+  batch_size: 128
+  loss: SoftmaxCrossEntropy
+  optimizer:
+    name: SGD  # class name in torch.optim
+    kwargs: 
+      lr: 0.0005
+      momentum: 0.9
+  lr_scheduler:  
+    name: StepLR
+    kwargs:
+      step_size: 150
+      gamma: 1  # we fix the learning rate
+  gradient_clip: null  # null or float
+
+test:
+  batch_size: 128
+  loss: SoftmaxCrossEntropy
+
+finetune:
+  Nt: 16  # Nt = batch size / (2 * (1 + Na))
+  Na: 3
+  Nf: 3
+  ts: 0.8
+  tg: 0.2
+
+checkpoint:
+  path: checkpoints/
+  load_checkpoint: 'checkpoints/phase_i/cifar10-LT_resnet20/im10/best_model.pt'  # like 'best_model.pt'. if none, no load checkpoint
+  save_checkpoint_interval: 5 # only for train phase. epoch number
+
+log:
+  path: log/
+  log_interval: 200  # only for train phase. batch number
+
+tensorboard:
+  path: run_summary/
+
+feature:
+  path: feature/cifar10-LT_resnet20/im10/
+  cam_layers: 'layer3'

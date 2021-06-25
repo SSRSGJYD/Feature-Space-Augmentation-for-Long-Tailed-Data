@@ -3,7 +3,7 @@ random_seed: 1314  # null for no seed
 dataset:
   name: Cifar10-LT
   kwargs: 
-    im: 10
+    im: 200
 
 model:
   name: resnet20
