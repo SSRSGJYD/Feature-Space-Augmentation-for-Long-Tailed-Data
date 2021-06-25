@@ -10,7 +10,7 @@ from datasets.places_lt import PlacesLTDataset
 all_datasets = {
     'example':          ExampleDataset,
     'Cifar10-LT':       Cifar10LTDataset,
-    'cifar100-LT':      Cifar100LTDataset,
+    'Cifar100-LT':      Cifar100LTDataset,
     'ImageNet-LT':      ImageNetLTDataset,
     'Places-LT':        PlacesLTDataset,
     'iNaturalist-2017': INaturalist2017Dataset,
