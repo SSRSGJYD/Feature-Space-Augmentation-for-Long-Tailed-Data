@@ -43,11 +43,11 @@ class Cifar10LTDataset(torchvision.datasets.CIFAR10):
     def __getitem__(self, item):
         img, label = self.data[item], self.labels[item]
         img = Image.fromarray(img)
-        img = self.transform(img).float()
+        img_ = self.transform(img).float()
         if self.visualize:
-            return img, label, item, label * 255 * np.ones((3, 224, 224), dtype=np.float)
+            return img_, label, item, img
         else:
-            return img, label, item
+            return img_, label, item
     
     def load_sample(self, sample):
         label, item = sample
