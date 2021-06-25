@@ -67,19 +67,19 @@ Here is some examples of tail classes from ImageNet-LT:
 
     ./
     ├── configs/                            # store experiment configs
-    │   ├── phase_i/                        # there are 3 training phase in the paper
-    │   │   ├── cifar10-LT_resnet18.yaml    # a training config
+    │   ├── phase_i/                        # phase-I configurations
+    │   │   ├── example.yaml    
     │   │   └── ... 
-    │   ├── phase_ii/
-    │   │   ├── cifar10-LT_resnet18.yaml    # config for extracting feature map
+    │   ├── phase_ii/                       # phase-II configurations
+    │   │   ├── example.yaml    
     │   │   └── ... 
-    │   └── phase_iii/
-    │   │   ├── cifar10-LT_resnet18.yaml    # a training config
+    │   └── phase_iii/                      # phase-III configurations
+    │   │   ├── example.yaml    
     │   │   └── ... 
     ├── datasets/                           # all datasets
     │   ├── __init__.py                     # include get_dataset()
-    │   ├── finetune_dataset.py				# online augmentation dataset for phase III
-    │   ├── feature_dataset.py				# offline augmentation dataset for phase III
+    │   ├── finetune_dataset.py             # online augmentation dataset for phase-III
+    │   ├── feature_dataset.py              # offline augmentation dataset for phase-III
     │   ├── example.py
     │   ├── cifar_lt.py
     │   └── imagenet_lt.py
@@ -100,10 +100,10 @@ Here is some examples of tail classes from ImageNet-LT:
     │   │   └── ...
     │   └── phase_iii/
     ├── log/                                # logging files and backup configs, same structure as 
-    ├── phase_i_train_or_test.py            # phase I training & test script
-    ├── phase_ii_extract_feature.py         # phase II script
-    ├── phase_iii_online_train_or_test.py   # phase III online training & test script
-    ├── phase_iii_offline_train_or_test.py  # phase III offline training & test script
+    ├── phase_i_train_or_test.py            # phase-I training & test script
+    ├── phase_ii_extract_feature.py         # phase-II script
+    ├── phase_iii_online_train_or_test.py   # phase-III online training & test script
+    ├── phase_iii_offline_train_or_test.py  # phase-III offline training & test script
     ├── run_summary/                        # tensorboard summary, same structure as ./checkpoints
     ├── .gitignore                          
     ├── LICENSE
