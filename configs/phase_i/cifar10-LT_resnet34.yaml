@@ -21,6 +21,7 @@ train:
     kwargs: 
       lr: 0.1
       momentum: 0.9
+      weight_decay: 0.0002
   lr_scheduler:
     name: StepLR  # class name in torch.optim.lr_scheduler
     kwargs:

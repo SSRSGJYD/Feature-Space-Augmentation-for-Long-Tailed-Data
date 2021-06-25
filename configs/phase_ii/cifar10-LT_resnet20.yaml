@@ -1,0 +1,25 @@
+random_seed: 1314  # null for no seed
+
+dataset:
+  name: Cifar10-LT
+  kwargs: 
+    im: 200
+
+model:
+  name: resnet20
+  kwargs:
+    pretrained: false
+
+test:
+  batch_size: 128
+
+feature:
+  path: feature/
+  cam_layers: 'layer3'  # separate by comma. e.g., 'layer3, layer4'
+
+vis:
+  path: vis/
+
+checkpoint:
+  load_checkpoint: 'checkpoints/phase_i/cifar10-LT_resnet20/im200/best_model.pt'
+  

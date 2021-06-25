@@ -41,6 +41,8 @@ def main():
 
 def phase_ii_test(test_loader, model, gradcam, device, config):
     model.eval()
+    layers = config['feature']['cam_layers'].split(',')
+    layer = layers[0]
     scores_per_class = torch.zeros((test_loader.dataset.NUM_CLASSES, test_loader.dataset.NUM_CLASSES))
     path_prefix = os.path.join(args.config, args.note)
     
@@ -64,6 +66,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
             c = int(label[start])
             for j in range(start, end):
                 model.zero_grad()
+                gradcam.vis_info[layer]['grad'] = []
                 gradcam.cal_grad(outputs[j:j+1], c)
                 result = gradcam.cal_cam(j)
                 for k, cam in result.items():
