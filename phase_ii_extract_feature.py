@@ -64,7 +64,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
             start = change_indices[i]
             end = change_indices[i+1]
             c = int(label[start])
-            for j in range(start, end):
+            for j in range(start, end): # 同一个类别只回传一次，因为上面没有shuffle,所以是按序读取的
                 model.zero_grad()
                 gradcam.vis_info[layer]['grad'] = []
                 gradcam.cal_grad(outputs[j:j+1], c)
@@ -76,9 +76,9 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
                     # save record
                     np.savez(os.path.join(save_folder, '{}.npz'.format(uuids[j])), 
                         cam=cam.numpy(),
-                        feature=gradcam.vis_info[k]['output'][j].cpu().numpy())
+                        feature=gradcam.vis_info[k]['output'][j].cpu().numpy()) # 这里存储了每一个train_sample的类激活图
                 # update scores
-                scores_per_class[c].add_(scores[j])
+                scores_per_class[c].add_(scores[j]) 
         gradcam.reset_info()
 
     # average scores per class
