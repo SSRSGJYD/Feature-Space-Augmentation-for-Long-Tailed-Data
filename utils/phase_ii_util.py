@@ -75,7 +75,7 @@ class GradCam(object):
         """
         one_hots = torch.zeros(1, y.shape[-1]).to(y.device)
         one_hots[0, t_label] = 1
-        y.backward(gradient=one_hots, retain_graph=True)
+        y.backward(gradient=one_hots, retain_graph=True) # 这种backward仅传递指定label梯度
 
     def cal_cam(self, ind):
         result = dict()
