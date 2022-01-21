@@ -46,7 +46,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
     scores_per_class = torch.zeros((test_loader.dataset.NUM_CLASSES, test_loader.dataset.NUM_CLASSES))
     path_prefix = os.path.join(args.config, args.note)
     
-    for i_batch, (img, label, uuids) in enumerate(test_loader):
+    for i_batch, (img, label, uuids) in enumerate(test_loader): # 这里一大堆都为了计算confusion matrixs
         img: torch.FloatTensor = img.to(device)
         label: torch.IntTensor = label.to(device)
         outputs = model(img)
