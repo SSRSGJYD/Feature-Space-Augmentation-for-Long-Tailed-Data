@@ -59,7 +59,7 @@ def phase_ii_test(test_loader, model, gradcam, device, config):
                 change_indices.append(i)
                 last = label[i]
 
-        change_indices.append(len(label))
+        change_indices.append(len(label)) # for slides
         for i in range(len(change_indices)-1):
             start = change_indices[i]
             end = change_indices[i+1]
