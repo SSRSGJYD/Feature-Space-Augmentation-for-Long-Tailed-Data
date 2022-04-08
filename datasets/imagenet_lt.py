@@ -33,7 +33,7 @@ class ImageNetLTDataset(torch.utils.data.Dataset):
     NUM_CLASSES = 1000
     IM = 256
 
-    def __init__(self, train: bool, visualize: False, **kwargs):
+    def __init__(self, train: bool, visualize=False, **kwargs):
         super().__init__()
         # root path is the folder name containing imageNet_ILSVRC2012 dataset
         self.rootpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imageNet_ILSVRC2012")
